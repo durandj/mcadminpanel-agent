@@ -1,0 +1,15 @@
+language: python
+sudo: false
+python:
+    - 3.5
+    - 3.5-dev
+install:
+    - pip install .
+before_script:
+    - pylint --rcfile .pylintrc mcadminpanel
+script:
+    - nosetests --with-coverage --cover-package=mcadminpanel --cover-min-percentage=95 --rednose
+addons:
+    code_climate:
+        repo_token: a5c8e35dadeee9be6a65bb89f05b2630177f0717c8f0002ba14d637a2ae38584
+

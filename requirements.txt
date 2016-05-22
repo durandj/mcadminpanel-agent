@@ -1,0 +1,8 @@
+click
+coverage
+nose
+psutil
+pylint
+python-daemon
+rednose
+

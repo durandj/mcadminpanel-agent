@@ -62,6 +62,15 @@ class Configuration(object):
         return self._config.get(name)
 
     @classmethod
+    def save_default_config(cls, path):
+        """
+        Save a default configuration to the given path
+        """
+
+        with open(path, 'w') as file_stream:
+            json.dump(cls.DEFAULTS, file_stream, indent=4)
+
+    @classmethod
     def _get_config(cls, raw_config):
         config = json.load(raw_config)
 

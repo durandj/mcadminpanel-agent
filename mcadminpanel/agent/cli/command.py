@@ -2,6 +2,9 @@
 Main CLI command for the agent
 """
 
+import os
+import os.path
+
 import click
 
 import mcadminpanel.agent.agent
@@ -22,12 +25,39 @@ def mcadminpanel_agent(ctx, config):
     ctx.obj = {'config': mcadminpanel.agent.config.Configuration(config)}
 
 @mcadminpanel_agent.command()
-def generate_config():
+@click.option(
+    '--path',
+    type=click.Path(dir_okay=True),
+    prompt=True,
+    default=lambda: os.path.expanduser(os.path.join('~', 'mcadminpanel')),
+    help='Path where servers will live')
+@click.option(
+    '--config',
+    type=click.Path(file_okay=True),
+    prompt=True,
+    default=lambda: os.path.expanduser(os.path.join('~', 'mcadminpanel', 'config.json')))
+@click.option(
+    '--overwrite',
+    type=bool,
+    default=None,
+    help='Overwrite the config file if it exists already')
+def generate_config(path, config, overwrite):
     """
     Generate a config file
     """
 
-# TODO(durandj): implement config command
+    os.makedirs(path, exist_ok=True)
+
+    if os.path.exists(config):
+        if overwrite is None:
+            overwrite = click.confirm('Overwrite existing configuration?')
+
+        if not overwrite:
+            raise click.Abort()
+
+        os.remove(config)
+
+    mcadminpanel.agent.config.Configuration.save_default_config(config)
 
 @mcadminpanel_agent.command()
 @click.option(

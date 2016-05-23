@@ -127,6 +127,27 @@ class TestConfiguration(unittest.TestCase):
             config.logging['file'],
         )
 
+    @unittest.mock.patch('builtins.open')
+    def test_save_default_config(self, fake_open):
+        """
+        Tests that we can save a default configuration file
+        """
+
+        file_stream = io.StringIO()
+
+        fake_open.return_value = fake_open
+        fake_open.__enter__.return_value = file_stream
+
+        Configuration.save_default_config('test.json')
+
+        fake_open.assert_called_with('test.json', 'w')
+
+        self.assertDictEqual(
+            Configuration.DEFAULTS,
+            json.loads(file_stream.getvalue()),
+            'Default config did not contain the correct values',
+        )
+
 @unittest.mock.patch('builtins.open')
 def test_constr_with_path(fake_open):
     """
@@ -154,7 +175,7 @@ def test_constr_io_except(fake_open):
 @unittest.mock.patch('builtins.open')
 def test_constr_json_except(fake_open):
     """
-    Tests that we properly handle JSON parse excpeetions
+    Tests that we properly handle JSON parse exceptions
     """
 
     fake_open.return_value = io.StringIO('{')

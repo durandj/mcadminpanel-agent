@@ -25,7 +25,12 @@ class TestAgent(unittest.TestCase):
         self.config = unittest.mock.Mock(
             root='myroot',
             pidfile='mypidfile',
-            logging={'level': 'warn', 'file': self.log_file.name},
+            logging={
+                'level': 'warn',
+                'file': self.log_file.name,
+                'date_format': '%m-%d-%Y %H:%M:%S',
+                'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            },
         )
 
     def test_constr(self):
@@ -73,7 +78,7 @@ class TestAgent(unittest.TestCase):
             stderr=None,
         )
 
-        agent.run.assert_called_with()
+        agent.run.assert_called_with(True)
 
     @unittest.mock.patch('daemon.pidfile.PIDLockFile')
     @unittest.mock.patch('daemon.DaemonContext')
@@ -101,7 +106,7 @@ class TestAgent(unittest.TestCase):
             stderr=sys.stderr,
         )
 
-        agent.run.assert_called_with()
+        agent.run.assert_called_with(False)
 
     @unittest.mock.patch('psutil.Process')
     @unittest.mock.patch('builtins.open')
@@ -132,7 +137,7 @@ class TestAgent(unittest.TestCase):
         self.config.logging['level'] = 'does_not_exist'
 
         agent = mcadminpanel.agent.agent.Agent(self.config)
-        agent.configure_logger()
+        agent.configure_logger(True)
 
     @unittest.mock.patch('asyncio.get_event_loop')
     def test_run_forever(self, get_event_loop):
@@ -146,7 +151,7 @@ class TestAgent(unittest.TestCase):
         get_event_loop.return_value = event_loop
 
         agent = mcadminpanel.agent.agent.Agent(self.config)
-        agent.run()
+        agent.run(True)
 
         get_event_loop.assert_called_with()
 

@@ -70,8 +70,6 @@ def start(ctx, detach):
     Start the agent
     """
 
-# TODO(durandj): allow passing of config options thru params
-
     agent = mcadminpanel.agent.agent.Agent(ctx.obj['config'])
     agent.start(detach)
 
